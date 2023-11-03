@@ -1,0 +1,44 @@
+body {
+    background-color: rgb(24, 40, 38);
+    background-size: cover;
+}
+
+/*CSS for Game title on top*/
+.title {
+    text-align: center;
+    position: relative;
+    font-family: fantasy;
+    top: 0;
+    margin: 0;
+    font-size: 24px;
+    color: white;
+}
+
+/*CSS for game container*/
+.game-container {
+    width: 80%;
+    height: 80%;
+    border: 3px solid black;
+    margin: 0 auto;
+    position: absolute;
+    background: url(../images/background-4.jpg);
+    background-size: cover;
+    top: 51%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/*CSS for the typing box where the user will type in */
+#typingbox {
+    font-family: fantasy;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: absolute;
+    bottom: 0;
+    left: 40%;
+    transform: translate(-5%, -50%);
+    width: 250px;
+    height: 50px;
+    text-align: center;
+    padding: 0;
+}
