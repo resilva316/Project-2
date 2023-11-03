@@ -42,3 +42,50 @@ body {
     text-align: center;
     padding: 0;
 }
+
+#pauseButton {
+    position: absolute;
+    bottom: 30px; 
+    left: 50%;
+    transform: translateX(-50%); 
+    padding: 10px;
+    font-size: 1em;
+    cursor: pointer;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    background-color: #006400;
+    border: none;
+    border-radius: 8px;
+}
+
+#resumeButton {
+    position: absolute;
+    bottom: 30px; 
+    left: 50%;
+    transform: translateX(-50%); 
+    padding: 10px;
+    font-size: 1em;
+    cursor: pointer;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    background-color: #006400;
+    border: none;
+    border-radius: 8px;
+}
+
+.pause-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.pause-message {
+    color: white;
+    font-size: 4rem;
+    text-align: center;
+}
