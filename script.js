@@ -100,24 +100,24 @@ class Bug {
 
 }
 
-function generateBug() {
+// function generateBug() {
 
-    let word = words_library[getRandomInt(words_library.length)];
-    let bug = new Bug(word);
+//     let word = words_library[getRandomInt(words_library.length)];
+//     let bug = new Bug(word);
 
-    if (word in bug_map) {
-        let bug_array = bug_map[word];
-        bug_array.push(bug);
-        bug_map[word] = bug_array;
-        console.log(word);
-        //console.log("Existing");
-    } else {
-        bug_map[word] = [bug];
-        console.log(word);
-        //console.log("New");
-    }
+//     if (word in bug_map) {
+//         let bug_array = bug_map[word];
+//         bug_array.push(bug);
+//         bug_map[word] = bug_array;
+//         console.log(word);
+//         //console.log("Existing");
+//     } else {
+//         bug_map[word] = [bug];
+//         console.log(word);
+//         //console.log("New");
+//     }
 
-}
+// }
 
 //This function should be able to match the words from the user input field to existing objects with the same word and delete them
 function killBug(word) {
@@ -173,27 +173,41 @@ function level_iterator(level_counter, spawn_interval) {
 
 setInterval(() => { level_iterator(level_counter, spawn_interval) }, 30000);
 
-function blah() {
+function generateBug() {
     //console.log(spawn_interval);
-    generateBug();
-    setTimeout(blah, spawn_interval.interval * 1000);
+    let word = words_library[getRandomInt(words_library.length)];
+    let bug = new Bug(word);
+
+    if (word in bug_map) {
+        let bug_array = bug_map[word];
+        bug_array.push(bug);
+        bug_map[word] = bug_array;
+        console.log(word);
+        //console.log("Existing");
+    } else {
+        bug_map[word] = [bug];
+        console.log(word);
+        //console.log("New");
+    }
+    // generateBug();
+    setTimeout(generateBug, spawn_interval.interval * 1000);
 }
 
-setTimeout(blah, spawn_interval.interval * 1000);
+setTimeout(generateBug, spawn_interval.interval * 1000);
 
 //setInterval(generateBug, 5000/*spawn_interval * 1000*/);
 
-// document.addEventListener("keyup", function (event) {
-//     var input = document.getElementById("typingbox");
-//     var val = input.value.trim();
+document.addEventListener("keyup", function (event) {
+    var input = document.getElementById(".typingbox");
+    var val = input.value.trim();
 
-//     if (killBug(val)) {
-//         input.value = "";
-//         console.log("cleared");
-//         console.log(Object.keys(bug_map))
-//     }
+    if (killBug(val)) {
+        input.value = "";
+        //console.log("cleared");
+        //console.log(Object.keys(bug_map))
+    }
 
-// });
+});
 
 // setInterval(() => {
 //     console.log(Object.keys(bug_map))
