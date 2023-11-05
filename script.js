@@ -4,9 +4,16 @@ will be the "backend" of each DOM element that will be displayed on the page.
 */
 
 //This is the library that holds all the words that will be choosed at random with each generation of a bug object.
-const words_library = ["frontend", "backend", "debug", "abstraction", "optimize", "404", "stack", "heap", "object", "algorithm", "software", "computation", "api", "library", "script", "ux", "template", "animation", "authentication", "code", "data", "interface", "function", "variable", "wireframe", "git", "database", "list", "operator"];
+const words_library = ["frontend", "backend", "debug", "abstraction", "optimize", "404", "stack", "heap", "object", "algorithm", "software", "computation", "api", "library", "script", "ux", "template", "animation", "authentication", "code", "data", "interface", "function", "variable", "wireframe", "git", "database", "list", "operator", "remake", "react", "buffer", "functional programming", "object oriented programming", "object", "class", "ai", "machine learning", "neural network", "kernel", "operating system", "data science", "pointer", "stream", "ide", "data structure", "tree", "package", "server", "client", "github"];
 let max_length = 0;
 let biggest = "";
+let bug_counter = 0;
+
+let total_health = 50;
+let player_health = total_health;
+
+var level_iterator_process_id = 0;
+var generate_bug_process_id = 0;
 // for (let word of words_library) {                            
 //     if (word.length > max_length) {                          
 //         max_length = word.length;
@@ -30,7 +37,7 @@ function getRandomInt(max) {
 //This is the class that dictates the bug objects we are generating
 class Bug {
     // this constructor should also call addBugToDOM
-    constructor(word) {
+    constructor(word, id) {
         // this constructor as of right now has these 4 things:
         // 1: this.word =  word; represents the object being given a randomly generated word and setting it as its own word data
         // 2: this.time = this is the associated timer related to how long the bug will take to get to the endzone, this should affect the CSS animation
@@ -41,6 +48,7 @@ class Bug {
         //                             typed input matches the objects word
         // 4: this.addBugToDom() = this is simply the constructor calling the addBugToDOM() member function immediately upon being created, this is because
         //                         we want the graphical element in the DOM to be spawned at the same time as the object in the script 
+        this.id = id;
         this.word = word;
         this.time = word.length;
         this.health_process_id = setTimeout(() => { removeHealth(this.word.length, this.word) }, (this.time * 1000));
@@ -53,6 +61,7 @@ class Bug {
         //create a new bug element as a <div>
         const bugElement = document.createElement("div");
         bugElement.classList.add("bug");
+        bugElement.id = "bug-" + this.id;
         bugElement.textContent = this.word; //sets the word associated with the bug
 
         bugElement.style.position = "absolute";
@@ -79,13 +88,8 @@ class Bug {
     //======================================= NEEDS TO BE WRITTEN =============================================
     deleteBugFromDOM() {
         //Find the bug element by its associated word
-        const bugElements = document.querySelectorAll(".bug");
-        for (const bugElement of bugElements) {
-            if (bugElement.textContent === this.word) {
-                //Removs the bug element from the DOM 
-                bugElement.remove();
-            }
-        }
+        const bugElement = document.querySelector(`#bug-${this.id}`);
+        bugElement.remove();
     }
     //=========================================================================================================
 
@@ -94,7 +98,7 @@ class Bug {
     // this function should also call `clearTimeout(healthProcessID)` to clear the timer that will subtract health
     // NEEDS TO BE USED INSIDE OF THE matchWord function once the function has matched the input with objects that exist
     deleteBug() {
-        this.deleteBugFromDOM;
+        this.deleteBugFromDOM();
         clearTimeout(this.health_process_id);
     }
 
@@ -124,7 +128,6 @@ function killBug(word) {
     if (word in bug_map) {
         for (let bug of bug_map[word]) {
             bug.deleteBug();
-
         }
         delete bug_map[word];
         return true;
@@ -132,17 +135,32 @@ function killBug(word) {
 
 }
 
-//Function that will remove health from the global health bar variable 
-let player_health = 50;
+//Function that will remove health from the global health bar variable
 //============================================ NEEDS TO BE WRITTEN ============================================
 function removeHealth(length, word) {
     player_health -= (length + 1);
+    if (player_health <= 0) {
+        player_health = 0;
+        end_game();
+    }
+
+    // Updates health bar
+    let health_bar = document.querySelector(".health");
+    health_bar.style.width = `${100 * player_health / total_health}%`;
+    //console.log(player_health);
+    //console.log(`${player_health / total_health}%`);
 
     if (word in bug_map) {
         //console.log(bug_map[word]);
         //console.log(player_health);
+        bug_map[word][0].deleteBug(word);
         delete bug_map[word][0];
         delete_first = bug_map[word].shift();
+
+        if (bug_map[word].length == 0) {
+            delete bug_map[word]
+        }
+
         //console.log(bug_map[word]);
 
     }
@@ -157,57 +175,66 @@ var spawn_interval = {
 
 function level_iterator(level_counter, spawn_interval) {
     level_counter.counter += 1;
-    if (spawn_interval.interval < 3) {
+    if (spawn_interval.interval > 3) {
         //console.log("<3")
-        //console.log(spawn_interval.interval);
-        spawn_interval.interval -= 0.33;
-        //console.log(spawn_interval.interval);
-
-    } else {
-        //console.log(">3");
         //console.log(spawn_interval.interval);
         spawn_interval.interval -= 0.5;
         //console.log(spawn_interval.interval);
-    }
-}
+        console.log("first if: " + spawn_interval.interval)
 
-setInterval(() => { level_iterator(level_counter, spawn_interval) }, 30000);
+    } else if (spawn_interval.interval > 1.5 && spawn_interval.interval <= 3) {
+        //console.log(">3");
+        //console.log(spawn_interval.interval);
+        spawn_interval.interval -= 0.33;
+        console.log(spawn_interval.interval);
+    }
+
+    if (spawn_interval.interval < 1.5) spawn_interval.interval = 1.5;
+
+    let level_counter_elem = document.querySelector("#level-counter");
+    level_counter_elem.innerHTML = `Level ${level_counter.counter}`;
+}
 
 function generateBug() {
     //console.log(spawn_interval);
     let word = words_library[getRandomInt(words_library.length)];
-    let bug = new Bug(word);
+    let bug = new Bug(word, bug_counter);
+    bug_counter++;
 
     if (word in bug_map) {
         let bug_array = bug_map[word];
         bug_array.push(bug);
         bug_map[word] = bug_array;
-        console.log(word);
+        //console.log(word);
         //console.log("Existing");
     } else {
         bug_map[word] = [bug];
-        console.log(word);
+        //console.log(word);
         //console.log("New");
     }
     // generateBug();
-    setTimeout(generateBug, spawn_interval.interval * 1000);
+    generate_bug_process_id = setTimeout(generateBug, spawn_interval.interval * 1000);
 }
 
-setTimeout(generateBug, spawn_interval.interval * 1000);
+let isPaused = false;
 
-//setInterval(generateBug, 5000/*spawn_interval * 1000*/);
+function togglePause() {
+    isPaused = !isPaused;
+    const pauseOverlay = document.getElementById('pauseOverlay');
+    pauseOverlay.style.display = isPaused ? 'flex' : 'none';
+}
 
-document.addEventListener("keyup", function (event) {
-    var input = document.getElementById(".typingbox");
-    var val = input.value.trim();
+function pauseGame() {
+    document.getElementById('typingbox').disabled = true;
+    // If you have a game loop interval or animation frame request, cancel it here
+    // clearInterval(gameLoopInterval); or cancelAnimationFrame(requestId);
+}
 
-    if (killBug(val)) {
-        input.value = "";
-        //console.log("cleared");
-        //console.log(Object.keys(bug_map))
-    }
-
-});
+function resumeGame() {
+    document.getElementById('typingbox').disabled = false;
+    // Restart your game loop interval or animation frame request here
+    // gameLoopInterval = setInterval(gameLoop, 1000 / 60); or requestId = requestAnimationFrame(gameLoop);
+}
 
 // setInterval(() => {
 //     console.log(Object.keys(bug_map))
@@ -215,3 +242,48 @@ document.addEventListener("keyup", function (event) {
 //     //console.log(Object.keys(bug_map))
 //     console.log("------------------");
 // }, 5000)
+
+function start_game() {
+
+    let start_popup = document.querySelector(".start-popup");
+    start_popup.style.display = "none";
+
+    level_iterator_process_id = setInterval(() => { level_iterator(level_counter, spawn_interval) }, 30000);
+    generate_bug_process_id = setTimeout(generateBug, spawn_interval.interval * 1000);
+
+    //setInterval(generateBug, 5000/*spawn_interval * 1000*/);
+
+    document.addEventListener("keyup", function (event) {
+        var input = document.getElementById("typingbox");
+        var val = input.value.trim();
+
+        if (killBug(val)) {
+            input.value = "";
+            //console.log("cleared");
+            //console.log(Object.keys(bug_map))
+        }
+
+    });
+
+}
+
+function end_game() {
+
+    let end_popup = document.querySelector(".end-popup");
+    let end_popup_text = document.querySelector("#end-popup-text");
+    end_popup_text.innerHTML = `Nice try! You made it all the way to level: ${level_counter.counter}`;
+    end_popup.style.display = "flex";
+
+    // kill all the bugs in bug_map
+    for (let word in bug_map) {
+        for (let bug of bug_map[word]) {
+            bug.deleteBug();
+        }
+        delete bug_map[word];
+    }
+
+
+    clearTimeout(generate_bug_process_id);
+    clearInterval(level_iterator_process_id);
+
+}

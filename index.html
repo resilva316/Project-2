@@ -1,17 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>BUG-ZAPPER</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="./style.css">
-        <script type="text/javascript" src="./script.js"></script>
-    </head>
-    <body>
-        <h1 class="title">BUG-ZAPPER</h1>
-        <div class="game-container"> 
-            <canvas></canvas>
-            <input id="typingbox" disabled autofocus autocapitalize="none">
-        </div>
-    </body>
+
+<head>
+    <title>BUG-ZAPPER</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <h1 class="title">BUG-ZAPPER</h1>
+
+    <div class="popup start-popup">
+        <p>
+            Hello, welcome to the bug-zapper.
+            Your goal will be to help Professor Uong protect his precious dragon fruit trees by typing out the words
+            above the encroaching bugs!
+            Press the start button below to begin.
+        </p>
+        <button class="button start-button" onclick="start_game()">Start</button>
+    </div>
+
+    <div class="popup end-popup">
+        <p id="end-popup-text"></p>
+        <a href="./index.html" class="button end-button">Restart</a>
+    </div>
+
+    <div class="health-bar">
+        <div class="health"></div>
+    </div>
+
+
+    <div class="game-container">
+        <p id="level-counter">Level 1</p>
+        <canvas></canvas>
+        <img src="./images/dragonfruit.webp" class="tree">
+        <input id="typingbox" autofocus autocapitalize="none">
+    </div>
+    <div id="pauseOverlay" class="pause-overlay" style="display: none;">
+        <div class="pause-message">PAUSED</div>
+        <button id="resumeButton" onclick="togglePause()">Resume</button>
+
+    </div>
+    <!-- <button id="pauseButton" onclick="togglePause()">Pause</button> -->
+</body>
+
 </html>
